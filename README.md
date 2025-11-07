@@ -1,7 +1,7 @@
 # n8n Beginner Tutorial – Season 1
 
 **Windows + macOS (All‑in‑One Docker Compose)**
-**Zero external ngrok install • Everything runs in Docker • Production‑ready-ish**
+**Zero external ngrok install • Everything runs in Docker **
 
 > This repo ships with:
 >
@@ -18,8 +18,7 @@
 * [Quick Start (TL;DR)](#quick-start-tldr)
 * [Setup: ngrok domain & token](#setup-ngrok-domain--token)
 * [Setup: Google Cloud OAuth (Sheets + Gmail)](#setup-google-cloud-oauth-sheets--gmail)
-* [Run on Windows](#run-on-windows)
-* [Run on macOS](#run-on-macos)
+* [Run the Whole setup](#run-the-service)
 * [Import the example workflow](#import-the-example-workflow)
 * [Beautiful HTML form (optional)](#beautiful-html-form-optional)
 * [Environment reference](#environment-reference)
@@ -45,11 +44,13 @@ A complete **lead‑capture system** running fully in Docker:
 
 | Tool               | Windows 10/11              | macOS |
 | ------------------ | -------------------------- | ----- |
-| Docker Desktop     | ✅ Enable **WSL 2** backend | ✅     |
+| Docker Desktop     | ✅ Enable **WSL 2**         | ✅     |
 | Git (optional)     | ✅                          | ✅     |
 | VS Code (optional) | ✅                          | ✅     |
 
 * Docker Desktop: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+* for mac use this link https://docs.docker.com/desktop/setup/install/mac-install
+* for Windows use this link https://docs.docker.com/desktop/setup/install/windows-install/
 * Git: [https://git-scm.com/](https://git-scm.com/)
 * VS Code: [https://code.visualstudio.com/](https://code.visualstudio.com/)
 
@@ -135,14 +136,14 @@ If you see a `redirect_uri_mismatch` error, double‑check that your **Authorize
 
 ---
 
-## Run on Windows
+## Run the Service
 
 > Tested on Windows 11/10 with Docker Desktop + WSL2.
 
 ```powershell
 # 1) Clone and open
-git clone <YOUR_REPO_URL> n8n-beginner-season1
-cd n8n-beginner-season1
+git clone https://github.com/veristamp/n8n-Beginner-setup.git
+cd n8n-Beginner-setup
 
 # 2) Create env from template
 copy example.env .env
@@ -153,48 +154,18 @@ docker compose up -d
 
 # 4) Check health
 docker compose ps
-# n8n and postgresql should be healthy within ~30–60s
+# n8n and postgresql should be healthy within 10-15s
 
 # 5) Open your domain in the browser
-start https://YOUR_NGROK_DOMAIN
+https://YOUR_NGROK_DOMAIN
 ```
-
 > First visit: create the n8n admin user.
-
----
-
-## Run on macOS
-
-> Tested on macOS Sonoma/Ventura with Docker Desktop.
-
-```bash
-# 1) Clone and open
-git clone <YOUR_REPO_URL> n8n-beginner-season1
-cd n8n-beginner-season1
-
-# 2) Create env from template
-cp example.env .env
-# then edit .env and set NGROK_AUTHTOKEN + NGROK_DOMAIN
-
-# 3) Start everything
-docker compose up -d
-
-# 4) Check health
-docker compose ps
-
-# 5) Open your domain in the browser
-open https://YOUR_NGROK_DOMAIN
-```
-
-> First visit: create the n8n admin user.
-
----
 
 ## Import the example workflow
 
 1. Open **n8n** → **Workflows** → **Import from File**.
 2. Select `workflows/lead-capture.json` from this repo.
-3. Update the **Credentials** nodes to use your saved Google/Telegram/Gmail/Slack creds.
+3. Update the **Credentials** in the nodes to use your Google/Telegram/Gmail/Slack creds.
 4. Click **Execute** (or activate the workflow).
 
 **Expected flow**
