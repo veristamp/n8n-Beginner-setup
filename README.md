@@ -1,7 +1,7 @@
 # n8n Beginner Tutorial – Season 1
 
 **Windows + macOS (All‑in‑One Docker Compose)**
-**Zero external ngrok install • Everything runs in Docker **
+**Zero external ngrok install • Everything runs in Docker**
 
 > This repo ships with:
 >
@@ -13,162 +13,117 @@
 
 ## Table of Contents
 
-* [What you’ll build](#what-youll-build)
-* [Prerequisites](#prerequisites)
 * [Quick Start (TL;DR)](#quick-start-tldr)
 * [Setup: ngrok domain & token](#setup-ngrok-domain--token)
 * [Setup: Google Cloud OAuth (Sheets + Gmail)](#setup-google-cloud-oauth-sheets--gmail)
-* [Run the Whole setup](#run-the-service)
+* [Telegram Bot Setup](#telegram-bot-setup)
 * [Import the example workflow](#import-the-example-workflow)
 * [Beautiful HTML form (optional)](#beautiful-html-form-optional)
-* [Environment reference](#environment-reference)
 * [Troubleshooting](#troubleshooting)
 * [FAQ](#faq)
-* [Uninstall / Reset](#uninstall--reset)
-* [License](#license)
-
----
-
-## What you’ll build
-
-A complete **lead‑capture system** running fully in Docker:
-
-* Public **HTTPS domain** via ngrok (e.g., `https://my-cool-n8n.ngrok.io`)
-* n8n + PostgreSQL
-* Google OAuth credentials (Sheets + Gmail)
-* Workflow: Receive Webhook → Clean → Append to Google Sheet → Telegram alert → Gmail welcome email → Thank‑you response
-
----
-
-## Prerequisites
-
-| Tool               | Windows 10/11              | macOS |
-| ------------------ | -------------------------- | ----- |
-| Docker Desktop     | ✅ Enable **WSL 2**         | ✅     |
-| Git (optional)     | ✅                          | ✅     |
-| VS Code (optional) | ✅                          | ✅     |
-
-* Docker Desktop: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
-* for mac use this link https://docs.docker.com/desktop/setup/install/mac-install
-* for Windows use this link https://docs.docker.com/desktop/setup/install/windows-install/
-* Git: [https://git-scm.com/](https://git-scm.com/)
-* VS Code: [https://code.visualstudio.com/](https://code.visualstudio.com/)
-
-> Make sure Docker Desktop is running **before** you start.
 
 ---
 
 ## Quick Start (TL;DR)
 
-1. **Reserve a free ngrok domain** and copy your **Authtoken**.
-2. Copy `example.env` → `.env` 
-```bash
-cp example.env .env
-```
-and Set these Credentials in the .env file
+1. **Clone this repo**
 
-```env
-NGROK_AUTHTOKEN=your_authtoken_here
-NGROK_DOMAIN=my-cool-n8n.ngrok.io
-```
+   ```bash
+   git clone https://github.com/veristamp/n8n-Beginner-setup.git
+   cd n8n-Beginner-setup
+   ```
 
-3. Start services:
+2. **Copy example environment file and edit**
 
-```bash
-# Windows (PowerShell) or macOS (zsh) or Linux (bash)
-docker compose up -d
-```
+   ```bash
+   cp example.env .env
+   ```
 
-4. Open `https://my-cool-n8n.ngrok.io`(your Ngrok Domain), create the n8n admin user.
-5. Do **Google OAuth** setup (Sheets + Gmail) and add credentials in n8n.
-6. Import **workflows/lead-capture.json** and press **Execute**.
+   Then fill it in after creating your ngrok account (next step).
+
+3. **Get your ngrok domain and token** (see below) and add them to `.env`:
+
+   ```env
+   NGROK_AUTHTOKEN=your_authtoken_here
+   NGROK_DOMAIN=my-cool-n8n.ngrok.io
+   ```
+
+4. **Start n8n + Postgres + ngrok**
+
+   ```bash
+   docker compose up -d
+   ```
+
+5. Wait 10–15 seconds, then open `https://your-ngrok-domain` in your browser and create your n8n admin user.
+
+6. When n8n is up, continue to **Google OAuth setup**.
 
 ---
 
 ## Setup: ngrok domain & token
 
 1. Go to [https://dashboard.ngrok.com](https://dashboard.ngrok.com) and sign in.
-2. **Cloud Edge → Domains → Reserve a domain** (free tier).
+2. Navigate to **Cloud Edge → Domains → Reserve a domain** (free tier).
 
    * Example: `my-cool-n8n.ngrok.io`
-3. Copy your **Authtoken** from **Get Started → Your Authtoken**.
-4. Create `.env` in the repo root using the provided template:
+3. Copy your **Authtoken** from [Your Authtoken page](https://dashboard.ngrok.com/get-started/your-authtoken).
+4. Paste both values into `.env`:
 
-   * Copy `example.env` → `.env` and fill:
-
-```env
-NGROK_AUTHTOKEN=your_authtoken_here
-NGROK_DOMAIN=my-cool-n8n.ngrok.io
-```
-
-> **Never commit** your real `.env`.
+   ```env
+   NGROK_AUTHTOKEN=your_authtoken_here
+   NGROK_DOMAIN=my-cool-n8n.ngrok.io
+   ```
+5. Save the file.
 
 ---
 
 ## Setup: Google Cloud OAuth (Sheets + Gmail)
 
-1. Go to [https://console.cloud.google.com](https://console.cloud.google.com) → **New Project** → name it `n8n-season1`.
-2. **APIs & Services → Enable APIs & Services**:
+1. Go to [https://console.cloud.google.com](https://console.cloud.google.com).
+2. Create a new project called `n8n-season1`.
+3. Enable these APIs:
 
-   * Enable **Google Sheets API** and **Gmail API**.
-3. **OAuth consent screen** → User type **External** → fill basic info → Save.
-4. **Credentials → Create Credentials → OAuth client ID** → **Web application**.
-5. Add **Authorized redirect URI** (must match your ngrok domain):
+   * Google Sheets API
+   * Gmail API
+4. Under **OAuth consent screen**, select **External**, fill in your info, and save.
+5. Go to **Credentials → Create Credentials → OAuth Client ID** → Choose **Web Application**.
+6. Add the following **Authorized redirect URI**:
 
-```
-https://YOUR_NGROK_DOMAIN/oauth2/callback
-```
+   ```
+   https://YOUR_NGROK_DOMAIN/oauth2/callback
+   ```
+7. Download your OAuth JSON credentials.
+8. In n8n → **Credentials**, select:
 
-6. Download the **client credentials JSON**.
+   * **Google Sheets OAuth2 API** → Paste **Client ID** and **Client Secret** from JSON.
+   * **Gmail OAuth2 API** → Same process.
+9. Click **Connect**, sign in with Google, and allow access.
 
-> 👉 For deeper details, see the official n8n guide: [n8n Google OAuth Generic Docs](https://docs.n8n.io/integrations/builtin/credentials/google/oauth-generic/)
-
-### Add the credentials in n8n
-
-In n8n → **Credentials**:
-
-* **Google Sheets OAuth2 API** → Enter the **Client ID** and **Client Secret** from your JSON.
-* **Gmail OAuth2 API** → Same process: enter **Client ID** and **Client Secret**.
-
-> The redirect/callback URL is automatically set by n8n. You **do not** need to modify or manually enter it. Simply click **Connect**, sign in with Google, and grant access through the browser.
-
-If you see a `redirect_uri_mismatch` error, double‑check that your **Authorized redirect URI** in the Google Console exactly matches your n8n instance URL (`https://YOUR_NGROK_DOMAIN/oauth2/callback`).
+> The callback URL is automatically handled by n8n — no manual editing required.
+> For deeper details, check the official n8n guide: [Google OAuth Generic Docs](https://docs.n8n.io/integrations/builtin/credentials/google/oauth-generic/)
 
 ---
 
-## Run the Service
+## Telegram Bot Setup
 
-> Tested on Windows 11/10 with Docker Desktop + WSL2.
+1. Open Telegram and search for `@BotFather`.
+2. Run the command `/newbot`.
+3. Give it a name (e.g., **n8n Alert Bot**) and a username ending in `bot` (e.g., `n8n_alert_bot`).
+4. Copy the **API Token** shown by BotFather.
+5. In n8n → **Credentials → Telegram Bot API**, paste your token and click **Connect**.
 
-```powershell
-# 1) Clone and open
-git clone https://github.com/veristamp/n8n-Beginner-setup.git
-cd n8n-Beginner-setup
+Now your n8n workflows can send messages to Telegram!
 
-# 2) Create env from template
-copy example.env .env
-# then edit .env and set NGROK_AUTHTOKEN + NGROK_DOMAIN
-
-# 3) Start everything
-docker compose up -d
-
-# 4) Check health
-docker compose ps
-# n8n and postgresql should be healthy within 10-15s
-
-# 5) Open your domain in the browser
-https://YOUR_NGROK_DOMAIN
-```
-> First visit: create the n8n admin user.
+---
 
 ## Import the example workflow
 
-1. Open **n8n** → **Workflows** → **Import from File**.
-2. Select `workflows/lead-capture.json` from this repo.
-3. Update the **Credentials** in the nodes to use your Google/Telegram/Gmail/Slack creds.
-4. Click **Execute** (or activate the workflow).
+1. In n8n, go to **Workflows → Import from File**.
+2. Choose `workflows/lead-capture.json` from this repo.
+3. Update the nodes to use your Google Sheets, Gmail, and Telegram credentials.
+4. Click **Execute** or toggle **Active** to run it automatically.
 
-**Expected flow**
+**Workflow overview:**
 
 ```
 [Webhook: HTML Form]
@@ -183,7 +138,9 @@ https://YOUR_NGROK_DOMAIN
 
 ## Beautiful HTML form (optional)
 
-Use any static host (or local file) with a form posting to your webhook URL:
+1. Copy the code below into a file called `form.html`.
+2. Replace `YOUR_NGROK_DOMAIN` with your actual domain.
+3. Double-click it to open locally, or host it anywhere.
 
 ```html
 <!DOCTYPE html>
@@ -213,107 +170,49 @@ Use any static host (or local file) with a form posting to your webhook URL:
 </html>
 ```
 
----
-
-## Environment reference
-
-All used by `docker-compose.yml`:
-
-```env
-# Required
-NGROK_AUTHTOKEN=...
-NGROK_DOMAIN=...
-
-# Optional (defaults are set in compose file)
-# Timezone
-TZ=Asia/Kolkata
-GENERIC_TIMEZONE=Asia/Kolkata
-```
-
-The compose configuration (already provided) sets:
-
-* `N8N_EDITOR_BASE_URL=https://${NGROK_DOMAIN}`
-* `WEBHOOK_URL=https://${NGROK_DOMAIN}`
-* `N8N_PROTOCOL=https`
-* Postgres connection env for persistence
+Now you have a simple, working lead capture form!
 
 ---
 
 ## Troubleshooting
 
 **n8n shows 502/Bad Gateway**
+Wait 30–60 seconds after `docker compose up -d`. Then run:
 
-* Wait 30–60 seconds after `up -d`. Check `docker compose ps` and logs:
+```bash
+docker compose logs -f n8n
+docker compose logs -f ngrok
+```
 
-  ```bash
-  docker compose logs -f n8n
-  docker compose logs -f ngrok
-  ```
-* Ensure `NGROK_DOMAIN` is actually reserved in your ngrok dashboard.
-
-**Google OAuth errors**
-
-* If you get `redirect_uri_mismatch`, verify that your **Authorized redirect URI** in Google matches your n8n URL exactly.
-* Make sure you entered **Client ID** and **Client Secret** correctly.
+**Google OAuth redirect_uri_mismatch**
+Ensure the Google Console **Authorized redirect URI** exactly matches `https://YOUR_NGROK_DOMAIN/oauth2/callback`.
 
 **PostgreSQL unhealthy**
+If DB fails, reset volumes (this deletes data):
 
-* Remove volumes and retry (this wipes data!):
+```bash
+docker compose down -v && docker compose up -d
+```
 
-  ```bash
-  docker compose down -v
-  docker compose up -d
-  ```
-
-**Port conflicts**
-
-* If port `5678` is busy, edit the ports section in `docker-compose.yml` (left side only), e.g. `8678:5678`.
-
-**ngrok domain already in use**
-
-* Make sure your reserved domain exactly matches `.env`.
-
-**Telegram/Slack not sending**
-
-* Check tokens and required bot scopes/permissions. Reconnect credentials in n8n.
+**Telegram not sending messages**
+Check the token and make sure the bot has permission to message you.
 
 ---
 
 ## FAQ
 
-**Q: Can I change the domain later?**
-A: Yes—update the reserved domain in ngrok and set `NGROK_DOMAIN` in `.env`, then `docker compose up -d`.
+**Q: Can I change the ngrok domain later?**
+A: Yes, update `.env` with new domain and token, then `docker compose up -d`.
 
-**Q: Is this safe for production?**
-A: It’s a great starting point. For real production, add backups, monitoring, secrets management, and consider a dedicated reverse proxy and DB.
-
-**Q: Where does n8n store data?**
-A: In the Postgres volume (`postgresql_data`) and n8n app volume (`n8n_data`). Both are Docker named volumes.
+**Q: Is this production ready?**
+A: It’s perfect for learning and demos. For production, add backups and a static reverse proxy.
 
 **Q: How do I upgrade n8n?**
-A: Change the image tag in `docker-compose.yml` (e.g., `n8nio/n8n:<version>`), then `docker compose pull && docker compose up -d`.
-
----
-
-## Uninstall / Reset
-
-**Stop and remove containers (keep volumes):**
+A: Update image tag in `docker-compose.yml`, then run:
 
 ```bash
-docker compose down
+docker compose pull && docker compose up -d
 ```
-
-**Remove everything (containers + volumes + data):**
-
-```bash
-docker compose down -v
-```
-
----
-
-## License
-
-This tutorial and example workflow are provided for educational use. See `LICENSE` for details.
 
 ---
 
