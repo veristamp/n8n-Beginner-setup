@@ -23,7 +23,20 @@
 * [FAQ](#faq)
 
 ---
+## Prerequisites
 
+Before starting, make sure these tools are installed:
+
+* **Docker Desktop**
+
+  * Windows: [Install Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+  * macOS: [Install Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+* **Git**: [https://git-scm.com/](https://git-scm.com/)
+* **Visual Studio Code**: [https://code.visualstudio.com/](https://code.visualstudio.com/)
+
+> Make sure Docker Desktop is running before you start.
+
+---
 ## Quick Start (TL;DR)
 
 1. **Clone this repo**
