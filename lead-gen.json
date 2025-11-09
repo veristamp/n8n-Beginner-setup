@@ -1,0 +1,233 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead Generation",
+        "formDescription": "This is a Test form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Name",
+              "placeholder": "Micheal Jordan"
+            },
+            {
+              "fieldLabel": "Your Phone Number"
+            },
+            {
+              "fieldLabel": "Your Email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        -192
+      ],
+      "id": "1a99d85e-fcac-4dce-984d-10711f8f2edb",
+      "name": "On form submission",
+      "webhookId": "c1dbbfe8-906c-4e95-8afd-ea5836900149"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cZPDw8ugQ5cNYKF_oUQpQoFHLTQ42B-lBTHvDrwkHF0",
+          "mode": "list",
+          "cachedResultName": "n8n Lead Gen",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cZPDw8ugQ5cNYKF_oUQpQoFHLTQ42B-lBTHvDrwkHF0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cZPDw8ugQ5cNYKF_oUQpQoFHLTQ42B-lBTHvDrwkHF0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Your Name",
+              "displayName": "Your Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Your Phone Number",
+              "displayName": "Your Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Your Email",
+              "displayName": "Your Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "formMode",
+              "displayName": "formMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        -192
+      ],
+      "id": "b524910b-180f-4a14-935b-b734e564075c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "epd9VqmsUvYP5SpJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Your Email'] }}",
+        "subject": "Welcome to Veristamp",
+        "emailType": "text",
+        "message": "Welcome to Veristamp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -208
+      ],
+      "id": "50341d06-0790-4b3d-b6c1-a74aa8b154c9",
+      "name": "Send a message",
+      "webhookId": "b3be7228-282a-4f1a-97f4-2e3013ab247a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Mc9jOBUwXmuotW8K",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7417069059",
+        "text": "={{ $json.labelIds[0] }}\n{{ $('On form submission').item.json['Your Name'] }} is signed up and their Phone Number is {{ $('On form submission').item.json['Your Phone Number'] }}, their Email is {{ $('On form submission').item.json['Your Email'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -176
+      ],
+      "id": "7019e07f-a34e-4279-9514-9c53885cf48b",
+      "name": "Send a text message",
+      "webhookId": "9f2c0139-77a5-4e63-a389-3a68233f3697",
+      "credentials": {
+        "telegramApi": {
+          "id": "UIMkvQn2jDJOpn5x",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Your Name": "Veristamp",
+          "Your Phone Number": "+918274911419",
+          "Your Email": "bhole4421@gmail.com",
+          "submittedAt": "2025-11-09T21:16:52.636+05:30",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "75de276a-c29f-4503-bab3-8ced9836f90f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2422e1a450b6c3b33528f734f8e25257ac21425a0cffd56a92121ebb885b8817"
+  },
+  "id": "a7TlzBCzkVIkdHKG",
+  "tags": []
+}
